@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.jp.springmvchibernate.entity.Customer;
 import com.jp.springmvchibernate.service.CustomerService;
+import com.jp.springmvchibernate.util.SortUtils;
 
 @Controller
 @RequestMapping("/customer")
@@ -23,10 +24,20 @@ public class CustomerController {
 	private CustomerService customerService;
 
 	@GetMapping("/list")
-	public String listCustomers(Model theModel) {
+	public String listCustomers(Model theModel, @RequestParam(required=false) String sort) {
 		
-		// get customers from the dao
-		List<Customer> customers = customerService.getCustomers();
+		// get customers from the service
+		List<Customer> customers = null;
+				
+		// check for sort field
+		if (sort != null) {
+			int sortField = Integer.parseInt(sort);
+			customers = customerService.getCustomers(sortField);
+		} else {
+			
+			// no sort field was provided, default to sorting by last name
+			customers = customerService.getCustomers(SortUtils.LAST_NAME);
+		}
 		
 		// add the customers to the model
 		theModel.addAttribute("customers", customers);

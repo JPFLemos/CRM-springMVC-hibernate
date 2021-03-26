@@ -6,7 +6,7 @@ import com.jp.springmvchibernate.entity.Customer;
 
 public interface CustomerService {
 
-	public List<Customer> getCustomers();
+	public List<Customer> getCustomers(int lastName);
 
 	public void saveCustomer(Customer newCustomer);
 

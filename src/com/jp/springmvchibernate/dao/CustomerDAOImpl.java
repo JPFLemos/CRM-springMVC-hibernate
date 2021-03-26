@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.jp.springmvchibernate.entity.Customer;
+import com.jp.springmvchibernate.util.SortUtils;
 
 @Repository //allows component scan and exception handling
 public class CustomerDAOImpl implements CustomerDAO {
@@ -17,13 +18,31 @@ public class CustomerDAOImpl implements CustomerDAO {
 	private SessionFactory sessionFactory;
 	
 	
-	public List<Customer> getCustomers() {
+	public List<Customer> getCustomers(int sortField) {
 
 		// get the current hibernate session
 		Session currentSession = sessionFactory.getCurrentSession();
 		
+		// determine sort field
+		String fieldName = null;
+		
+		switch (sortField) {
+		case SortUtils.FIRST_NAME:
+			fieldName = "firstName";
+			break;
+		case SortUtils.LAST_NAME:
+			fieldName = "lastName";
+			break;
+		case SortUtils.EMAIL:
+			fieldName = "email";
+			break;
+		default:
+			// if nothing matches the default is lastName
+			fieldName = "lastName";
+		}
+		
 		// create a query
-		Query<Customer> theQuery = currentSession.createQuery("from Customer order by lastName", Customer.class);
+		Query<Customer> theQuery = currentSession.createQuery("from Customer order by " + fieldName , Customer.class);
 		
 		// get the result list
 		List<Customer> customers = theQuery.getResultList();
